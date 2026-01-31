@@ -1,108 +1,131 @@
-import { useState, useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { motion, useScroll } from 'framer-motion';
 import { 
   Check, X, Shield, Zap, Crown, 
-  Target, ChevronDown, ChevronUp 
+  Target, CreditCard, ArrowLeft, ArrowRight 
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next'; // <--- LOCALIZATION HOOK
+
+// --- SEO ---
+import Head from '../components/seo/Head';
 
 // --- ASSETS ---
-const IMG_SCOUT = "https://images.unsplash.com/photo-1552674605-46d531d0e090?q=80&w=1888"; // Dawn/Hiking
-const IMG_HUNTER = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070"; // Gym Action
-const IMG_APEX = "https://images.unsplash.com/photo-1550259114-ad7188f0a967?q=80&w=2080"; // Intense/Dark/Red
+import HERO_VIDEO from '../assets/Ancient_Pillar_Orbit_Shot.mp4'; 
+import wolfBadge from '../assets/wolf-badge.png';   // Bronze (Wolf)
+import tigerBadge from '../assets/tiger-badge.png'; // Gold (Tiger)
+import lionBadge from '../assets/lion-badge.png';   // Premium (Lion)
 
 const Membership = () => {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
-  const [activeAccordion, setActiveAccordion] = useState<number | null>(null);
-  
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === 'ar';
+
   const containerRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement>(null); 
+
   useScroll({ target: containerRef });
 
-  // --- DATA ---
+  useEffect(() => {
+    if (videoRef.current) {
+        videoRef.current.playbackRate = 0.5; 
+    }
+  }, []);
+
+  // --- TYPOGRAPHY & LAYOUT LOGIC ---
+  const fontDisplay = isArabic ? 'font-cairo font-black' : 'font-beast font-black';
+  const fontText = isArabic ? 'font-cairo font-bold' : 'font-mono uppercase';
+  const textAlign = isArabic ? 'text-right' : 'text-left';
+
+  // --- CONFIG ---
+  const WHATSAPP_NUM = "962798885011";
+
+  // --- DATA (DYNAMIC FROM TRANSLATION) ---
   const tiers = [
     {
-      id: 'scout',
-      name: 'The Scout',
+      id: 'bronze',
+      name: t('membership.bronze.name'), // "Bronze" or "برونزي"
+      image: wolfBadge, 
       icon: Target,
-      // Earthy Bronze/Orange for the "Starter" Path
       color: 'text-[#cd7f32]', 
       border: 'border-[#cd7f32]',
       bg: 'bg-[#cd7f32]/10',
       glow: 'from-transparent to-[#cd7f32]/20',
-      price: billingCycle === 'monthly' ? '45' : '40',
-      desc: 'Begin Your Journey',
-      features: ['06:00 - 16:00 Access', 'Open Gym Territory', 'Wilds App Access', 'Orientation Ritual'],
-      powerLevel: 30
+      desc: t('membership.bronze.desc'),
+      // Safely fetch features array
+      features: t('membership.features.bronze', { returnObjects: true }) as string[],
+      powerLevel: 30,
+      msg: t('membership.bronze.msg')
     },
     {
-      id: 'hunter',
-      name: 'The Hunter',
+      id: 'gold',
+      name: t('membership.gold.name'),
+      image: tigerBadge,
       icon: Zap,
-      // ELECTRIC GREEN for the "Main" Path
-      color: 'text-[#76ff03]', 
-      border: 'border-[#76ff03]',
-      bg: 'bg-[#76ff03]/10',
-      glow: 'from-transparent to-[#76ff03]/20',
-      price: billingCycle === 'monthly' ? '65' : '55',
-      desc: 'Master The Wild',
+      color: 'text-[#ffd700]', 
+      border: 'border-[#ffd700]',
+      bg: 'bg-[#ffd700]/10',
+      glow: 'from-transparent to-[#ffd700]/20',
+      desc: t('membership.gold.desc'),
       recommended: true,
-      features: ['Unlimited Access (23:00)', 'Pack Sessions Included', 'Sacred Springs Access', 'Guest Hunting Rights'],
-      powerLevel: 75
+      features: t('membership.features.gold', { returnObjects: true }) as string[],
+      powerLevel: 70,
+      msg: t('membership.gold.msg')
     },
     {
-      id: 'apex',
-      name: 'The Apex',
+      id: 'premium',
+      name: t('membership.premium.name'),
+      image: lionBadge,
       icon: Crown,
-      // Aggressive Red for the "Elite" Path
       color: 'text-[#ef4444]', 
       border: 'border-[#ef4444]',
       bg: 'bg-[#ef4444]/10',
       glow: 'from-transparent to-[#ef4444]/20',
-      price: billingCycle === 'monthly' ? '150' : '130',
-      desc: 'Become Unstoppable',
-      features: ['Unlimited Everything', 'Personal Transformation Guide', 'Nutrition Council', 'VIP Tribe Status'],
-      powerLevel: 100
+      desc: t('membership.premium.desc'),
+      features: t('membership.features.premium', { returnObjects: true }) as string[],
+      powerLevel: 100,
+      msg: t('membership.premium.msg')
     }
   ];
 
   return (
-    <div ref={containerRef} className="bg-[#0d1f0d] text-[#e8f5e8] pt-20 overflow-x-hidden relative font-sans selection:bg-[#76ff03] selection:text-black">
+    <div ref={containerRef} className="bg-[#0d1f0d] text-[#e8f5e8] pt-20 overflow-x-hidden relative font-sans selection:bg-[#76ff03] selection:text-black" dir={isArabic ? 'rtl' : 'ltr'}>
       
-      {/* --- ATMOSPHERE LAYERS --- */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-         <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-         {/* Ambient Glows - Mainly Green with accents */}
-         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#1b5e20] blur-[150px] opacity-40"></div>
-         <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-[#76ff03] blur-[200px] opacity-10"></div>
-      </div>
+      {/* --- SEO INJECTION --- */}
+      <Head 
+        title={isArabic ? "اشتراكات وايلدز جيم | الأسعار والباقات" : "Membership Plans | Wilds Gym Amman Pricing"}
+        description={t('membership.heroDesc')}
+      />
 
       {/* --- HERO: CHOOSE YOUR DESTINY --- */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 py-20">
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 py-20 overflow-hidden">
+        
+        {/* VIDEO BACKGROUND LAYER */}
+        <div className="absolute inset-0 z-0">
+            <video
+                ref={videoRef}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover opacity-60 grayscale-[50%] brightness-75"
+            >
+                <source src={HERO_VIDEO} type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-[#0d1f0d]/80 mix-blend-multiply"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0d1f0d] via-transparent to-[#0d1f0d]"></div>
+        </div>
+
         <div className="text-center mb-16 relative z-10">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-                <h2 className="text-[#76ff03] font-beast text-sm uppercase tracking-[0.5em] mb-4">The Initiation Ritual</h2>
-                <h1 className="text-5xl md:text-8xl font-beast font-black uppercase text-[#f1f8e9] mb-6">
-                    Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#cd7f32] via-[#76ff03] to-[#ef4444]">Destiny</span>
+                <h2 className={`text-[#76ff03] uppercase tracking-[0.5em] mb-4 ${isArabic ? 'font-cairo font-bold text-xl' : 'font-beast text-sm'}`}>
+                    {t('membership.heroTitle')}
+                </h2>
+                <h1 className={`text-5xl md:text-8xl uppercase text-[#f1f8e9] mb-6 drop-shadow-2xl ${fontDisplay}`}>
+                    {t('membership.heroSub')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#cd7f32] via-[#ffd700] to-[#ef4444]">Tier</span>
                 </h1>
-                <p className="max-w-2xl mx-auto text-[#a5d6a7] font-mono text-sm uppercase leading-relaxed">
-                    "Before you lie three paths through the wilds. The question is not which path is best, but which path calls to YOUR wild nature?"
+                <p className={`max-w-2xl mx-auto text-[#a5d6a7] uppercase leading-relaxed drop-shadow-md ${fontText}`}>
+                    "{t('membership.heroDesc')}"
                 </p>
             </motion.div>
-
-            {/* BILLING TOGGLE */}
-            <div className="mt-12 inline-flex items-center gap-4 bg-[#050a05] p-1 rounded-full border border-[#2e7d32]">
-                <button 
-                    onClick={() => setBillingCycle('monthly')}
-                    className={`px-6 py-2 rounded-full font-beast text-xs uppercase tracking-widest transition-all ${billingCycle === 'monthly' ? 'bg-[#1b5e20] text-white' : 'text-[#666]'}`}
-                >
-                    Monthly Hunt
-                </button>
-                <button 
-                    onClick={() => setBillingCycle('annual')}
-                    className={`px-6 py-2 rounded-full font-beast text-xs uppercase tracking-widest transition-all ${billingCycle === 'annual' ? 'bg-[#76ff03] text-black shadow-[0_0_15px_rgba(118,255,3,0.4)]' : 'text-[#666]'}`}
-                >
-                    Annual Oath <span className="text-[10px] ml-1">(Save 20%)</span>
-                </button>
-            </div>
         </div>
 
         {/* --- RPG CHARACTER SELECT CARDS --- */}
@@ -119,29 +142,33 @@ const Membership = () => {
                     {/* Hover Glow Gradient */}
                     <div className={`absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-500 bg-gradient-to-b ${tier.glow}`}></div>
                     
-                    {/* Background Image (Faded) */}
-                    <div className="absolute inset-0 opacity-30 mix-blend-overlay grayscale group-hover:grayscale-0 transition-all duration-700">
-                        <img src={i === 0 ? IMG_SCOUT : i === 1 ? IMG_HUNTER : IMG_APEX} className="w-full h-full object-cover" alt="bg" />
+                    {/* BADGE IMAGE */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-30 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out z-0">
+                        <img 
+                            src={tier.image} 
+                            className="w-[80%] h-auto object-contain drop-shadow-[0_0_30px_rgba(0,0,0,0.8)]" 
+                            alt={`${tier.name} Badge`} 
+                        />
                     </div>
 
                     {/* Content */}
-                    <div className="relative z-10 p-8 flex flex-col h-full">
+                    <div className="relative z-10 p-8 flex flex-col h-full bg-gradient-to-b from-[#0a140a]/90 via-transparent to-[#0a140a]">
                         <div className="flex justify-between items-start mb-8">
                             <tier.icon className={`${tier.color} drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]`} size={40} />
                             {tier.recommended && (
-                                <span className="bg-[#76ff03] text-black text-[10px] font-beast uppercase px-3 py-1 tracking-widest shadow-[0_0_10px_rgba(118,255,3,0.5)]">
-                                    Pack Choice
+                                <span className={`bg-[#ffd700] text-black text-[10px] uppercase px-3 py-1 tracking-widest shadow-[0_0_10px_rgba(255,215,0,0.5)] ${isArabic ? 'font-cairo font-bold' : 'font-beast'}`}>
+                                    {t('membership.bestValue')}
                                 </span>
                             )}
                         </div>
 
-                        <h3 className="text-4xl font-beast font-black uppercase mb-2 text-[#f1f8e9]">{tier.name}</h3>
-                        <p className={`font-mono text-xs uppercase tracking-widest mb-8 ${tier.color}`}>{tier.desc}</p>
+                        <h3 className={`text-4xl uppercase mb-2 text-[#f1f8e9] shadow-black drop-shadow-lg ${fontDisplay}`}>{tier.name}</h3>
+                        <p className={`text-xs uppercase tracking-widest mb-8 ${tier.color} drop-shadow-md ${fontText}`}>{tier.desc}</p>
 
                         {/* Power Level Bar */}
                         <div className="mb-8">
-                            <div className="flex justify-between text-[10px] uppercase text-[#666] mb-1">
-                                <span>Power Level</span>
+                            <div className={`flex justify-between text-[10px] uppercase text-[#666] mb-1 ${fontText}`}>
+                                <span>{t('membership.power')}</span>
                                 <span className={tier.color}>{tier.powerLevel}/100</span>
                             </div>
                             <div className="h-1 w-full bg-[#1b5e20]/30">
@@ -150,29 +177,39 @@ const Membership = () => {
                                     whileInView={{ width: `${tier.powerLevel}%` }} 
                                     transition={{ duration: 1.5, delay: 0.5 }}
                                     className={`h-full ${tier.bg.replace('/10', '')} shadow-[0_0_10px_currentColor]`}
-                                    style={{ backgroundColor: 'currentColor', color: tier.id === 'scout' ? '#cd7f32' : tier.id === 'hunter' ? '#76ff03' : '#ef4444' }}
+                                    style={{ backgroundColor: 'currentColor', color: tier.id === 'bronze' ? '#cd7f32' : tier.id === 'gold' ? '#ffd700' : '#ef4444' }}
                                 ></motion.div>
                             </div>
                         </div>
 
                         {/* Features List */}
                         <ul className="space-y-4 mb-auto">
-                            {tier.features.map((feat, j) => (
-                                <li key={j} className="flex items-center gap-3 text-sm font-mono uppercase text-[#a5d6a7]">
+                            {tier.features && tier.features.map((feat, j) => (
+                                <li key={j} className={`flex items-center gap-3 text-sm uppercase text-[#a5d6a7] drop-shadow-md ${fontText}`}>
                                     <Check size={14} className={tier.color} /> {feat}
                                 </li>
                             ))}
                         </ul>
 
-                        {/* Price & CTA */}
+                        {/* Payment Method & CTA */}
                         <div className="pt-8 border-t border-[#2e7d32]/30 group-hover:border-opacity-50 transition-colors">
-                            <div className="flex items-baseline gap-1 mb-4">
-                                <span className="text-4xl font-beast text-[#f1f8e9]">{tier.price}</span>
-                                <span className="text-xs font-mono text-[#666]">JOD / MO</span>
+                            <div className="mb-4">
+                                <p className={`text-[#a5d6a7] text-[10px] uppercase tracking-widest mb-1 flex items-center gap-2 ${fontText}`}>
+                                    <CreditCard size={12}/> {t('membership.payment')}
+                                </p>
+                                <p className={`text-xl text-[#f1f8e9] uppercase ${fontDisplay}`}>
+                                    {t('membership.paymentMethod')}
+                                </p>
                             </div>
-                            <button className={`w-full py-4 font-beast uppercase tracking-widest border transition-all duration-300 hover:bg-[#f1f8e9] hover:text-black ${tier.border} ${tier.color} hover:shadow-[0_0_20px_currentColor]`}>
-                                Select {tier.name}
-                            </button>
+
+                            <a 
+                                href={`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(tier.msg)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`w-full block text-center py-4 uppercase tracking-widest border transition-all duration-300 hover:bg-[#f1f8e9] hover:text-black ${tier.border} ${tier.color} hover:shadow-[0_0_20px_currentColor] bg-black/40 backdrop-blur-sm ${isArabic ? 'font-cairo font-bold' : 'font-beast'}`}
+                            >
+                                {t('membership.selectBtn')} {tier.name}
+                            </a>
                         </div>
                     </div>
                 </motion.div>
@@ -180,38 +217,42 @@ const Membership = () => {
         </div>
       </section>
 
-      {/* --- COMPARISON TABLE: THE TRIBAL COUNCIL --- */}
+      {/* --- COMPARISON TABLE --- */}
       <section className="py-24 px-4 bg-[#0a140a] border-y border-[#1b5e20]/50">
         <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-5xl font-beast font-black uppercase text-[#f1f8e9] mb-4">The Paths at a Glance</h2>
-                <p className="text-[#a5d6a7] font-mono text-xs uppercase tracking-widest">Compare your destiny options</p>
+                <h2 className={`text-3xl md:text-5xl uppercase text-[#f1f8e9] mb-4 ${fontDisplay}`}>
+                    {t('membership.table.title')}
+                </h2>
+                <p className={`text-[#a5d6a7] text-xs uppercase tracking-widest ${fontText}`}>
+                    {t('membership.table.sub')}
+                </p>
             </div>
 
             <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full border-collapse" style={{ textAlign: isArabic ? 'right' : 'left' }}>
                     <thead>
                         <tr className="border-b border-[#2e7d32]/30">
-                            <th className="p-4 font-beast text-sm uppercase text-[#666]">Feature / Benefit</th>
-                            <th className="p-4 font-beast text-xl uppercase text-[#cd7f32] text-center">Scout</th>
-                            <th className="p-4 font-beast text-xl uppercase text-[#76ff03] text-center drop-shadow-[0_0_5px_rgba(118,255,3,0.5)]">Hunter</th>
-                            <th className="p-4 font-beast text-xl uppercase text-[#ef4444] text-center">Apex</th>
+                            <th className={`p-4 text-sm uppercase text-[#666] ${isArabic ? 'font-cairo' : 'font-beast'}`}>{t('membership.table.colFeature')}</th>
+                            <th className={`p-4 text-xl uppercase text-[#cd7f32] text-center ${isArabic ? 'font-cairo' : 'font-beast'}`}>{t('membership.bronze.name')}</th>
+                            <th className={`p-4 text-xl uppercase text-[#ffd700] text-center drop-shadow-[0_0_5px_rgba(255,215,0,0.5)] ${isArabic ? 'font-cairo' : 'font-beast'}`}>{t('membership.gold.name')}</th>
+                            <th className={`p-4 text-xl uppercase text-[#ef4444] text-center ${isArabic ? 'font-cairo' : 'font-beast'}`}>{t('membership.premium.name')}</th>
                         </tr>
                     </thead>
-                    <tbody className="font-mono text-xs uppercase text-[#a5d6a7]">
+                    <tbody className={`text-xs uppercase text-[#a5d6a7] ${fontText}`}>
                         {[
-                            { name: "Access Window", scout: "06:00 - 16:00", hunter: "Unlimited", apex: "Unlimited 24/7" },
-                            { name: "Training Zones", scout: "Open Gym", hunter: "All Zones", apex: "All Zones + VIP" },
-                            { name: "Pack Sessions", scout: false, hunter: "Limited", apex: "Unlimited" },
-                            { name: "Personal Guide", scout: false, hunter: "Discounted", apex: "Included" },
-                            { name: "Sacred Springs", scout: false, hunter: true, apex: "Priority" },
-                            { name: "Guest Rights", scout: false, hunter: "2 / Month", apex: "4 / Month" },
+                            { name: t('membership.table.rows.access.name'), bronze: t('membership.table.rows.access.bronze'), gold: t('membership.table.rows.access.gold'), premium: t('membership.table.rows.access.premium') },
+                            { name: t('membership.table.rows.nutrition'), bronze: false, gold: true, premium: true },
+                            { name: t('membership.table.rows.group'), bronze: false, gold: true, premium: true },
+                            { name: t('membership.table.rows.pt'), bronze: false, gold: true, premium: true },
+                            { name: t('membership.table.rows.private'), bronze: false, gold: false, premium: true },
+                            { name: t('membership.table.rows.vip'), bronze: false, gold: false, premium: true },
                         ].map((row, i) => (
                             <tr key={i} className="border-b border-[#2e7d32]/20 hover:bg-[#1b5e20]/20 transition-colors">
                                 <td className="p-4 text-[#f1f8e9] font-bold">{row.name}</td>
-                                <td className="p-4 text-center">{typeof row.scout === 'boolean' ? (row.scout ? <Check className="mx-auto text-[#cd7f32]" size={16}/> : <X className="mx-auto text-[#333]" size={16}/>) : row.scout}</td>
-                                <td className="p-4 text-center">{typeof row.hunter === 'boolean' ? (row.hunter ? <Check className="mx-auto text-[#76ff03]" size={16}/> : <X className="mx-auto text-[#333]" size={16}/>) : <span className="text-[#76ff03]">{row.hunter}</span>}</td>
-                                <td className="p-4 text-center">{typeof row.apex === 'boolean' ? (row.apex ? <Check className="mx-auto text-[#ef4444]" size={16}/> : <X className="mx-auto text-[#333]" size={16}/>) : <span className="text-[#ef4444] font-bold">{row.apex}</span>}</td>
+                                <td className="p-4 text-center">{typeof row.bronze === 'boolean' ? (row.bronze ? <Check className="mx-auto text-[#cd7f32]" size={16}/> : <X className="mx-auto text-[#333]" size={16}/>) : row.bronze}</td>
+                                <td className="p-4 text-center">{typeof row.gold === 'boolean' ? (row.gold ? <Check className="mx-auto text-[#ffd700]" size={16}/> : <X className="mx-auto text-[#333]" size={16}/>) : <span className="text-[#ffd700]">{row.gold}</span>}</td>
+                                <td className="p-4 text-center">{typeof row.premium === 'boolean' ? (row.premium ? <Check className="mx-auto text-[#ef4444]" size={16}/> : <X className="mx-auto text-[#333]" size={16}/>) : <span className="text-[#ef4444] font-bold">{row.premium}</span>}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -222,7 +263,6 @@ const Membership = () => {
 
       {/* --- THE OATH: COMMITMENT SECTION --- */}
       <section className="py-32 px-4 relative overflow-hidden">
-        {/* Background Ritual Fire (Green Fire now) */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#76ff03] blur-[200px] opacity-10 pointer-events-none"></div>
 
         <div className="container mx-auto max-w-2xl relative z-10 bg-[#0a140a] border border-[#2e7d32] p-8 md:p-12 text-center shadow-[0_0_50px_rgba(46,125,50,0.2)]">
@@ -230,73 +270,22 @@ const Membership = () => {
                 <Shield className="text-[#76ff03]" size={32} />
             </div>
 
-            <h2 className="text-4xl font-beast font-black uppercase text-[#f1f8e9] mb-6 mt-4">Seal Your Commitment</h2>
-            <p className="text-[#a5d6a7] font-mono text-sm uppercase leading-relaxed mb-12">
-                "You have chosen your path. Now make it official. This isn't a transaction—it's a transformation ritual."
+            <h2 className={`text-4xl uppercase text-[#f1f8e9] mb-6 mt-4 ${fontDisplay}`}>
+                {t('membership.oathTitle')}
+            </h2>
+            <p className={`text-[#a5d6a7] text-sm uppercase leading-relaxed mb-12 ${fontText}`}>
+                "{t('membership.oathText')}"
             </p>
 
-            <form className="space-y-6 text-left">
-                <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-[#666] font-mono text-xs uppercase mb-2">Warrior Name</label>
-                        <input type="text" className="w-full bg-[#050a05] border border-[#2e7d32]/50 p-4 text-[#f1f8e9] font-beast focus:border-[#76ff03] outline-none transition-colors" placeholder="ENTER NAME" />
-                    </div>
-                    <div>
-                        <label className="block text-[#666] font-mono text-xs uppercase mb-2">Digital Signal (Email)</label>
-                        <input type="email" className="w-full bg-[#050a05] border border-[#2e7d32]/50 p-4 text-[#f1f8e9] font-beast focus:border-[#76ff03] outline-none transition-colors" placeholder="ENTER EMAIL" />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-[#666] font-mono text-xs uppercase mb-2">Select Your Path</label>
-                    <select className="w-full bg-[#050a05] border border-[#2e7d32]/50 p-4 text-[#f1f8e9] font-beast focus:border-[#76ff03] outline-none appearance-none uppercase">
-                        <option>The Scout Path</option>
-                        <option>The Hunter Path (Recommended)</option>
-                        <option>The Apex Path</option>
-                    </select>
-                </div>
-
-                <div className="pt-6">
-                    <button type="button" className="w-full bg-[#76ff03] text-black py-6 font-beast text-xl uppercase tracking-widest hover:bg-[#f1f8e9] transition-colors duration-300 shadow-[0_0_20px_rgba(118,255,3,0.3)]">
-                        Complete Initiation
-                    </button>
-                    <p className="text-center text-[#666] font-mono text-[10px] uppercase mt-4">
-                        * 30-Day Money Back Guarantee. No Risk. Pure Wild.
-                    </p>
-                </div>
-            </form>
+            <a 
+                href={`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(t('membership.oathMsg'))}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`w-full block bg-[#76ff03] text-black py-6 text-xl uppercase tracking-widest hover:bg-[#f1f8e9] transition-colors duration-300 shadow-[0_0_20px_rgba(118,255,3,0.3)] ${isArabic ? 'font-cairo font-black' : 'font-beast'}`}
+            >
+                {t('membership.oathBtn')}
+            </a>
         </div>
-      </section>
-
-      {/* --- FAQ SECTION --- */}
-      <section className="py-24 px-4 bg-[#0a140a] border-t border-[#2e7d32]/30">
-          <div className="container mx-auto max-w-3xl">
-              <h2 className="text-3xl font-beast font-black uppercase text-[#f1f8e9] mb-12 text-center">Questions From Future Warriors</h2>
-              
-              <div className="space-y-4">
-                  {[
-                      { q: "Can I switch paths later?", a: "Absolutely. Evolution is natural. Upgrade anytime. Downgrade at renewal." },
-                      { q: "What if I need to pause?", a: "Life happens. Freeze for up to 3 months per year. Medical or travel reasons accepted." },
-                      { q: "I'm a complete beginner. Will I fit in?", a: "YES. 40% of our tribe started as complete newbies. We guide, support, and celebrate growth." },
-                      { q: "Are there hidden fees?", a: "Never. Price shown is price paid. No signup fees. No surprise charges." }
-                  ].map((item, i) => (
-                      <div key={i} className="border border-[#2e7d32]/30 bg-[#0d1f0d]">
-                          <button 
-                            onClick={() => setActiveAccordion(activeAccordion === i ? null : i)}
-                            className="w-full flex justify-between items-center p-6 text-left"
-                          >
-                              <span className="font-beast uppercase text-[#e5e5e5]">{item.q}</span>
-                              {activeAccordion === i ? <ChevronUp size={20} className="text-[#76ff03]"/> : <ChevronDown size={20} className="text-[#666]"/>}
-                          </button>
-                            {activeAccordion === i && (
-                                <div className="px-6 pb-6 text-[#a5d6a7] font-mono text-xs uppercase leading-relaxed border-t border-[#2e7d32]/20">
-                                    {item.a}
-                                </div>
-                            )}
-                      </div>
-                  ))}
-              </div>
-          </div>
       </section>
 
     </div>

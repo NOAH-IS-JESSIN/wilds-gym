@@ -1,34 +1,62 @@
-// 1. Removed 'React' from imports
-import { useState, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
+import { motion, useScroll, AnimatePresence } from 'framer-motion';
 import { 
-  Flame, MapPin, Phone, Mail, Share2, ArrowRight, 
+  Flame, MapPin, Phone, MessageSquare, Share2, ArrowRight, ArrowLeft,
   CheckCircle2, ChevronDown, ChevronUp, Shield 
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next'; // <--- HOOK
+
+// --- SEO ---
+import Head from '../components/seo/Head';
 
 // --- ASSETS ---
-const IMG_TREE = "https://images.unsplash.com/photo-1470058869958-2a77ade41c02?w=500&auto=format&fit=crop";
-// 2. Deleted the unused 'const TEXTURE' line entirely
+import HERO_VIDEO from '../assets/Cinematic_Jungle_Mist.mp4'; 
 
 const Contact = () => {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === 'ar';
+
   const containerRef = useRef(null);
   const formRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef });
-  const yParallax = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  useScroll({ target: containerRef });
+
+  useEffect(() => {
+    if (videoRef.current) {
+        videoRef.current.playbackRate = 0.8; 
+    }
+  }, []);
+
+  // --- TYPOGRAPHY & LAYOUT ---
+  const fontDisplay = isArabic ? 'font-cairo font-black' : 'font-beast font-black';
+  const fontText = isArabic ? 'font-cairo font-bold' : 'font-mono uppercase';
+  const textAlign = isArabic ? 'text-right' : 'text-left';
+  const borderStart = isArabic ? 'border-r-4 pr-6' : 'border-l-4 pl-6';
+
+  // --- CONFIG ---
+  const WHATSAPP_NUM = "962798885011";
 
   // --- FORM STATE ---
   const [formData, setFormData] = useState({ name: '', signal: '', type: 'Join Wilds Gym (Membership)', message: '' });
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
   
   const filledFields = Object.values(formData).filter(val => val.length > 0).length;
   const fireIntensity = (filledFields / 4); 
 
   const [activeAccordion, setActiveAccordion] = useState<number | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // --- HANDLERS ---
+  const handleWhatsApp = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus('submitting');
-    setTimeout(() => setStatus('success'), 2000); 
+    if(!formData.name || !formData.signal) return;
+
+    const text = `*New Signal Fire from Website* 🔥\n\n` +
+                 `*Name:* ${formData.name}\n` +
+                 `*Contact:* ${formData.signal}\n` +
+                 `*Purpose:* ${formData.type}\n` +
+                 `*Message:* ${formData.message}`;
+    
+    window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   const scrollToForm = () => {
@@ -36,17 +64,19 @@ const Contact = () => {
   };
 
   return (
-    <div ref={containerRef} className="bg-[#0d1f0d] text-[#e8f5e8] pt-20 overflow-x-hidden relative font-sans selection:bg-[#76ff03] selection:text-black">
+    <div ref={containerRef} className="bg-[#0d1f0d] text-[#e8f5e8] pt-20 overflow-x-hidden relative font-sans selection:bg-[#76ff03] selection:text-black" dir={isArabic ? 'rtl' : 'ltr'}>
       
+      {/* --- SEO --- */}
+      <Head 
+        title={isArabic ? "تواصل مع وايلدز جيم | الموقع وساعات الدوام" : "Contact Wilds Gym | Location & Hours in Sweifieh, Amman"}
+        description={t('contact.heroDesc')}
+      />
+
       {/* --- CSS ANIMATIONS --- */}
       <style>{`
         @keyframes torch-flicker {
           0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 10px #76ff03); }
           50% { opacity: 0.8; transform: scale(1.05); filter: drop-shadow(0 0 20px #76ff03); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translate(0, 0); opacity: 0.5; }
-          50% { transform: translate(10px, -20px); opacity: 1; }
         }
         .signal-fire {
           animation: torch-flicker 3s infinite ease-in-out;
@@ -55,48 +85,49 @@ const Contact = () => {
             filter: grayscale(1) invert(1) brightness(0.8) contrast(1.2) sepia(0.5) hue-rotate(70deg);
         }
         .firefly {
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          background-color: #76ff03;
-          border-radius: 50%;
-          opacity: 0;
-          animation: float 6s infinite ease-in-out;
-          will-change: transform, opacity;
-          box-shadow: 0 0 10px #76ff03;
+          position: absolute; width: 4px; height: 4px; background-color: #76ff03; border-radius: 50%;
+          opacity: 0; animation: float 6s infinite ease-in-out; will-change: transform, opacity; box-shadow: 0 0 10px #76ff03;
         }
       `}</style>
 
       {/* --- ATMOSPHERE --- */}
       <div className="fixed inset-0 pointer-events-none z-0">
          <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-         
-         {/* Fireflies */}
          <div className="firefly" style={{ top: '15%', left: '10%', animationDelay: '0s' }}></div>
          <div className="firefly" style={{ top: '45%', left: '85%', animationDelay: '2s' }}></div>
          <div className="firefly" style={{ top: '75%', left: '20%', animationDelay: '4s' }}></div>
          <div className="firefly" style={{ top: '30%', left: '60%', animationDelay: '1s' }}></div>
-
          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#76ff03] blur-[250px] opacity-10"></div>
       </div>
 
       {/* --- HERO: THE TRIBE AWAITS --- */}
       <section className="relative h-[80vh] flex flex-col justify-center items-center text-center px-6 overflow-hidden border-b border-[#2e7d32]">
-        <motion.div style={{ y: yParallax }} className="absolute inset-0 z-0">
-             <div className="absolute inset-0 bg-gradient-to-t from-[#0d1f0d] via-[#0d1f0d]/80 to-transparent z-10"></div>
-             <img src={IMG_TREE} className="w-full h-full object-cover grayscale brightness-[0.4]" alt="Communication Tree" />
-        </motion.div>
+        <div className="absolute inset-0 z-0">
+            <video
+                ref={videoRef}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto" 
+                className="w-full h-full object-cover opacity-60 grayscale-[40%] brightness-75"
+            >
+                <source src={HERO_VIDEO} type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-[#0d1f0d]/70 mix-blend-multiply"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0d1f0d] via-transparent to-[#0d1f0d]"></div>
+        </div>
 
         <div className="relative z-20 max-w-4xl">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="flex justify-center mb-6">
                 <Flame className="text-[#76ff03] signal-fire" size={64} />
             </div>
-            <h1 className="text-5xl md:text-8xl font-beast font-black uppercase text-[#e5e5e5] mb-6 tracking-tighter">
-              The Tribe Awaits. <br/> <span className="text-[#76ff03]">Your Signal.</span>
+            <h1 className={`text-5xl md:text-8xl uppercase text-[#e5e5e5] mb-6 tracking-tighter drop-shadow-2xl ${fontDisplay}`}>
+              {t('contact.heroTitle')} <br/> <span className="text-[#76ff03]">{t('contact.heroSub')}</span>
             </h1>
-            <p className="text-lg md:text-xl font-mono uppercase leading-relaxed text-[#a5d6a7] max-w-2xl mx-auto border-l-4 border-[#76ff03] pl-6 bg-black/50 py-4 backdrop-blur-sm">
-              "In the wild, communication is survival. Choose your method. Send your signal. The team at Wilds Gym in Sweifieh, Amman will answer."
+            <p className={`text-lg md:text-xl uppercase leading-relaxed text-[#a5d6a7] max-w-2xl mx-auto bg-black/50 py-4 backdrop-blur-sm shadow-xl ${fontText} ${borderStart}`}>
+              "{t('contact.heroDesc')}"
             </p>
           </motion.div>
         </div>
@@ -106,11 +137,11 @@ const Contact = () => {
       <section className="py-24 px-6 relative z-10 -mt-20">
         <div className="container mx-auto grid md:grid-cols-3 lg:grid-cols-5 gap-4">
             {[
-                { title: "Signal Fire", icon: Flame, color: "text-[#76ff03]", border: "group-hover:border-[#76ff03]", action: scrollToForm },
-                { title: "Tribal Drum", icon: Phone, color: "text-[#4caf50]", border: "group-hover:border-[#4caf50]", link: "tel:0798885011" },
-                { title: "Sacred Territory", icon: MapPin, color: "text-[#ffd700]", border: "group-hover:border-[#ffd700]", link: "https://maps.app.goo.gl/cwcFScdnaMHdCiz97" },
-                { title: "Messenger Bird", icon: Mail, color: "text-[#00bcd4]", border: "group-hover:border-[#00bcd4]", link: "mailto:info@wildsgym.jo" },
-                { title: "Tribal Network", icon: Share2, color: "text-[#d946ef]", border: "group-hover:border-[#d946ef]", link: "https://www.instagram.com/wildgym.jo" },
+                { title: t('contact.methods.fire'), icon: Flame, color: "text-[#76ff03]", border: "group-hover:border-[#76ff03]", action: scrollToForm },
+                { title: t('contact.methods.call'), icon: Phone, color: "text-[#4caf50]", border: "group-hover:border-[#4caf50]", link: "tel:+962798885011" },
+                { title: t('contact.methods.map'), icon: MapPin, color: "text-[#ffd700]", border: "group-hover:border-[#ffd700]", link: "https://maps.app.goo.gl/cwcFScdnaMHdCiz97" },
+                { title: t('contact.methods.chat'), icon: MessageSquare, color: "text-[#00bcd4]", border: "group-hover:border-[#00bcd4]", link: `https://wa.me/${WHATSAPP_NUM}?text=Hi,%20I%20have%20a%20question.` },
+                { title: t('contact.methods.social'), icon: Share2, color: "text-[#d946ef]", border: "group-hover:border-[#d946ef]", link: "https://www.instagram.com/wildgym.jo" },
             ].map((totem, i) => (
                 <motion.a 
                     key={i}
@@ -122,7 +153,7 @@ const Contact = () => {
                     className={`bg-[#050a05] border border-[#2e7d32] p-6 flex flex-col items-center justify-center gap-4 cursor-pointer group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(46,125,50,0.5)] ${totem.border} backdrop-blur-sm bg-opacity-80`}
                 >
                     <totem.icon className={`${totem.color} transition-transform group-hover:scale-110`} size={32} />
-                    <span className="font-beast uppercase text-sm tracking-widest text-[#f1f8e9]">{totem.title}</span>
+                    <span className={`uppercase text-sm tracking-widest text-[#f1f8e9] ${isArabic ? 'font-cairo font-bold' : 'font-beast'}`}>{totem.title}</span>
                 </motion.a>
             ))}
         </div>
@@ -139,24 +170,25 @@ const Contact = () => {
                 <div className="relative z-10 text-center">
                     <motion.div 
                         animate={{ 
-                            scale: 1 + fireIntensity, 
+                            scale: 1 + (fireIntensity * 0.5), 
                             opacity: 0.5 + (fireIntensity * 0.5),
-                            filter: `drop-shadow(0 0 ${fireIntensity * 50}px #76ff03)`
+                            filter: `drop-shadow(0 0 ${10 + (fireIntensity * 20)}px #76ff03)`
                         }}
-                        className="mb-8 inline-block"
+                        transition={{ type: "spring", stiffness: 100 }}
+                        className="mb-8 inline-block origin-bottom"
                     >
-                        <Flame className="text-[#76ff03]" size={64 + (fireIntensity * 64)} />
+                        <Flame className="text-[#76ff03]" size={100} />
                     </motion.div>
                     
-                    <h3 className="text-3xl font-beast uppercase text-[#e5e5e5] mb-2">Signal Strength</h3>
+                    <h3 className={`text-3xl uppercase text-[#e5e5e5] mb-2 ${fontDisplay}`}>{t('contact.strength.title')}</h3>
                     <div className="w-64 h-2 bg-[#1b5e20] rounded-full mx-auto overflow-hidden">
                         <motion.div 
                             className="h-full bg-[#76ff03]" 
                             animate={{ width: `${fireIntensity * 100}%` }}
                         />
                     </div>
-                    <p className="text-[#a5d6a7] font-mono text-xs uppercase mt-4">
-                        {fireIntensity < 1 ? "Fill the stones to build the fire" : "The fire is roaring. Send the signal."}
+                    <p className={`text-[#a5d6a7] text-xs uppercase mt-4 ${fontText}`}>
+                        {fireIntensity < 1 ? t('contact.strength.weak') : t('contact.strength.strong')}
                     </p>
                 </div>
             </div>
@@ -164,84 +196,72 @@ const Contact = () => {
             {/* FORM */}
             <div className="order-1 lg:order-2">
                 <div className="mb-12">
-                    <h2 className="text-4xl md:text-5xl font-beast font-black uppercase text-[#e5e5e5] mb-4">Light Your Signal Fire</h2>
-                    <p className="text-[#a5d6a7] font-mono text-sm uppercase">"Send a message to Wilds Gym – Sweifieh, Amman."</p>
+                    <h2 className={`text-4xl md:text-5xl uppercase text-[#e5e5e5] mb-4 ${fontDisplay}`}>{t('contact.form.title')}</h2>
+                    <p className={`text-[#a5d6a7] text-sm uppercase ${fontText}`}>"{t('contact.form.sub')}"</p>
                 </div>
 
-                {status === 'success' ? (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#1b5e20]/20 border border-[#76ff03] p-8 text-center">
-                        <CheckCircle2 className="text-[#76ff03] mx-auto mb-4" size={48} />
-                        <h3 className="text-2xl font-beast uppercase text-white mb-2">Signal Received!</h3>
-                        <p className="text-[#a5d6a7] font-mono text-xs uppercase">A pack elder will respond within 24 hours.</p>
-                        <button onClick={() => setStatus('idle')} className="mt-6 text-[#76ff03] font-bold text-xs uppercase underline">Send another signal</button>
-                    </motion.div>
-                ) : (
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="group">
-                            <label className="block text-[#666] font-mono text-[10px] uppercase mb-2 group-focus-within:text-[#76ff03] transition-colors">Your Name</label>
-                            <input 
-                                type="text" 
-                                required
-                                value={formData.name}
-                                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                className="w-full bg-[#050a05] border border-[#2e7d32] p-4 text-[#e5e5e5] font-beast focus:border-[#76ff03] outline-none transition-all"
-                                placeholder="WHAT DO THEY CALL YOU?"
-                            />
-                        </div>
+                <form className="space-y-6">
+                    <div className="group">
+                        <label className={`block text-[#666] text-[10px] uppercase mb-2 group-focus-within:text-[#76ff03] transition-colors ${fontText}`}>{t('contact.form.name')}</label>
+                        <input 
+                            type="text" 
+                            required
+                            value={formData.name}
+                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                            className={`w-full bg-[#050a05] border border-[#2e7d32] p-4 text-[#e5e5e5] focus:border-[#76ff03] outline-none transition-all ${isArabic ? 'font-cairo' : 'font-beast'}`}
+                            placeholder={t('contact.form.namePh')}
+                        />
+                    </div>
 
-                        <div className="group">
-                            <label className="block text-[#666] font-mono text-[10px] uppercase mb-2 group-focus-within:text-[#76ff03] transition-colors">Your Signal (Email or Phone)</label>
-                            <input 
-                                type="text" 
-                                required
-                                value={formData.signal}
-                                onChange={(e) => setFormData({...formData, signal: e.target.value})}
-                                className="w-full bg-[#050a05] border border-[#2e7d32] p-4 text-[#e5e5e5] font-beast focus:border-[#76ff03] outline-none transition-all"
-                                placeholder="WHERE SHALL WE REPLY?"
-                            />
-                        </div>
+                    <div className="group">
+                        <label className={`block text-[#666] text-[10px] uppercase mb-2 group-focus-within:text-[#76ff03] transition-colors ${fontText}`}>{t('contact.form.signal')}</label>
+                        <input 
+                            type="text" 
+                            required
+                            value={formData.signal}
+                            onChange={(e) => setFormData({...formData, signal: e.target.value})}
+                            className={`w-full bg-[#050a05] border border-[#2e7d32] p-4 text-[#e5e5e5] focus:border-[#76ff03] outline-none transition-all ${isArabic ? 'font-cairo' : 'font-beast'}`}
+                            placeholder={t('contact.form.signalPh')}
+                        />
+                    </div>
 
-                        <div className="group">
-                            <label className="block text-[#666] font-mono text-[10px] uppercase mb-2 group-focus-within:text-[#76ff03] transition-colors">Purpose of Signal</label>
-                            <select 
-                                value={formData.type}
-                                onChange={(e) => setFormData({...formData, type: e.target.value})}
-                                className="w-full bg-[#050a05] border border-[#2e7d32] p-4 text-[#e5e5e5] font-beast focus:border-[#76ff03] outline-none transition-all uppercase appearance-none"
-                            >
-                                <option>Join Wilds Gym (Membership)</option>
-                                <option>Personal Training</option>
-                                <option>Classes & Programs</option>
-                                <option>Nutritionist Services</option>
-                                <option>Sauna & Jacuzzi</option>
-                                <option>General Question</option>
-                            </select>
-                        </div>
-
-                        <div className="group">
-                            <label className="block text-[#666] font-mono text-[10px] uppercase mb-2 group-focus-within:text-[#76ff03] transition-colors">Your Message</label>
-                            <textarea 
-                                rows={4}
-                                required
-                                value={formData.message}
-                                onChange={(e) => setFormData({...formData, message: e.target.value})}
-                                className="w-full bg-[#050a05] border border-[#2e7d32] p-4 text-[#e5e5e5] font-mono text-sm focus:border-[#76ff03] outline-none transition-all"
-                                placeholder="SPEAK YOUR TRUTH..."
-                            />
-                        </div>
-
-                        <button 
-                            type="submit" 
-                            disabled={status === 'submitting'}
-                            className="w-full bg-[#76ff03] text-black py-6 font-beast text-xl uppercase tracking-widest hover:bg-[#f1f8e9] transition-colors duration-300 flex items-center justify-center gap-4 group hover:shadow-[0_0_20px_rgba(118,255,3,0.4)]"
+                    <div className="group">
+                        <label className={`block text-[#666] text-[10px] uppercase mb-2 group-focus-within:text-[#76ff03] transition-colors ${fontText}`}>{t('contact.form.purpose')}</label>
+                        <select 
+                            value={formData.type}
+                            onChange={(e) => setFormData({...formData, type: e.target.value})}
+                            className={`w-full bg-[#050a05] border border-[#2e7d32] p-4 text-[#e5e5e5] focus:border-[#76ff03] outline-none transition-all uppercase appearance-none ${isArabic ? 'font-cairo font-bold' : 'font-beast'}`}
                         >
-                            {status === 'submitting' ? 'Sending Signal...' : (
-                                <>
-                                    Light The Fire <Flame className="group-hover:scale-110 transition-transform" />
-                                </>
-                            )}
+                            <option>{t('contact.form.options.join')}</option>
+                            <option>{t('contact.form.options.pt')}</option>
+                            <option>{t('contact.form.options.class')}</option>
+                            <option>{t('contact.form.options.nutri')}</option>
+                            <option>{t('contact.form.options.sauna')}</option>
+                            <option>{t('contact.form.options.general')}</option>
+                        </select>
+                    </div>
+
+                    <div className="group">
+                        <label className={`block text-[#666] text-[10px] uppercase mb-2 group-focus-within:text-[#76ff03] transition-colors ${fontText}`}>{t('contact.form.msg')}</label>
+                        <textarea 
+                            rows={4}
+                            required
+                            value={formData.message}
+                            onChange={(e) => setFormData({...formData, message: e.target.value})}
+                            className={`w-full bg-[#050a05] border border-[#2e7d32] p-4 text-[#e5e5e5] text-sm focus:border-[#76ff03] outline-none transition-all ${isArabic ? 'font-cairo font-bold' : 'font-mono'}`}
+                            placeholder={t('contact.form.msgPh')}
+                        />
+                    </div>
+
+                    <div className="space-y-3">
+                        <button 
+                            onClick={handleWhatsApp}
+                            className={`w-full bg-[#76ff03] text-black py-6 text-xl uppercase tracking-widest hover:bg-[#f1f8e9] transition-colors duration-300 flex items-center justify-center gap-4 group hover:shadow-[0_0_20px_rgba(118,255,3,0.4)] ${isArabic ? 'font-cairo font-black' : 'font-beast'}`}
+                        >
+                            {t('contact.form.btn')} <MessageSquare className="group-hover:scale-110 transition-transform" />
                         </button>
-                    </form>
-                )}
+                    </div>
+                </form>
             </div>
         </div>
       </section>
@@ -251,30 +271,35 @@ const Contact = () => {
           <div className="container mx-auto">
               <div className="grid lg:grid-cols-12 gap-12">
                   <div className="lg:col-span-4 space-y-8">
-                      <h2 className="text-3xl md:text-5xl font-beast font-black uppercase text-[#e5e5e5]">Journey To <br/> Our Grounds</h2>
+                      <h2 className={`text-3xl md:text-5xl uppercase text-[#e5e5e5] ${fontDisplay}`}>
+                          {t('contact.map.title')}
+                      </h2>
                       <div className="space-y-6">
                           <div className="flex gap-4">
                               <div className="bg-[#0d1f0d] p-3 h-fit border border-[#2e7d32]"><MapPin className="text-[#76ff03]"/></div>
                               <div>
-                                  <h4 className="font-beast uppercase text-lg text-white">Wilds Gym Location</h4>
-                                  <p className="text-[#a5d6a7] font-mono text-xs uppercase">Paris Street, Sweifieh<br/>Amman, Jordan</p>
+                                  <h4 className={`uppercase text-lg text-white ${fontDisplay}`}>{t('contact.map.locTitle')}</h4>
+                                  <p className={`text-[#a5d6a7] text-xs uppercase ${fontText}`}>
+                                      {isArabic ? 'شارع باريس، الصويفية' : 'Paris Street, Sweifieh'}<br/>{isArabic ? 'عمان، الأردن' : 'Amman, Jordan'}
+                                  </p>
                               </div>
                           </div>
                           <div className="flex gap-4">
-                              <div className="bg-[#0d1f0d] p-3 h-fit border border-[#2e7d32]"><ArrowRight className="text-[#76ff03]"/></div>
+                              <div className="bg-[#0d1f0d] p-3 h-fit border border-[#2e7d32]"><ArrowRight className={`text-[#76ff03] ${isArabic ? 'rotate-180' : ''}`}/></div>
                               <div>
-                                  <h4 className="font-beast uppercase text-lg text-white">Arrival Tip</h4>
-                                  <p className="text-[#a5d6a7] font-mono text-xs uppercase">Look for the Wilds Totem.<br/>Entrance via Main Gate.</p>
+                                  <h4 className={`uppercase text-lg text-white ${fontDisplay}`}>{t('contact.map.tipTitle')}</h4>
+                                  <p className={`text-[#a5d6a7] text-xs uppercase ${fontText}`}>
+                                      {t('contact.map.tipText')}
+                                  </p>
                               </div>
                           </div>
                       </div>
-                      <a href="https://maps.app.goo.gl/cwcFScdnaMHdCiz97" target="_blank" rel="noreferrer" className="inline-block border border-[#76ff03] text-[#76ff03] px-8 py-4 font-beast uppercase text-sm tracking-widest hover:bg-[#76ff03] hover:text-black transition-colors">
-                          Navigate To Wilds Gym
+                      <a href="https://maps.app.goo.gl/cwcFScdnaMHdCiz97" target="_blank" rel="noreferrer" className={`inline-block border border-[#76ff03] text-[#76ff03] px-8 py-4 uppercase text-sm tracking-widest hover:bg-[#76ff03] hover:text-black transition-colors ${fontDisplay}`}>
+                          {t('contact.map.navBtn')}
                       </a>
                   </div>
 
                   <div className="lg:col-span-8 h-[500px] border border-[#2e7d32] relative group overflow-hidden">
-                      {/* Dark Mode Map Filter */}
                       <iframe 
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3384.662589574542!2d35.8675!3d31.9565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDU3JzIzLjQiTiAzNcKwNTInMDMuMCJF!5e0!3m2!1sen!2sjo!4v1625680000000!5m2!1sen!2sjo" 
                         width="100%" 
@@ -294,22 +319,24 @@ const Contact = () => {
       {/* --- SECTION 4: TRIBAL COUNCIL FAQ --- */}
       <section className="py-24 px-6 bg-[#0d1f0d]">
           <div className="container mx-auto max-w-3xl">
-              <h2 className="text-3xl font-beast font-black uppercase text-[#e5e5e5] mb-12 text-center">Wisdom From The Elders</h2>
+              <h2 className={`text-3xl uppercase text-[#e5e5e5] mb-12 text-center ${fontDisplay}`}>
+                  {t('contact.faq.title')}
+              </h2>
               
               <div className="space-y-4">
                   {[
-                      { q: "How do I join Wilds Gym in Amman?", a: "Visit us on Paris Street in Sweifieh or contact us using the form above. Our team will guide you through membership options." },
-                      { q: "Can I bring a guest to the gym?", a: "Yes, guests are welcome. Contact us for details." },
-                      { q: "What are Wilds Gym opening hours?", a: "Saturday–Thursday: 06:00 – 23:00. Friday: 14:00 – 21:00." },
-                      { q: "Is parking available near Wilds Gym?", a: "Yes, parking is available near the gym." },
-                      { q: "Do you offer personal training in Amman?", a: "Yes. Wilds Gym offers professional personal training for all fitness levels." }
+                      { q: t('contact.faq.q1'), a: t('contact.faq.a1') },
+                      { q: t('contact.faq.q2'), a: t('contact.faq.a2') },
+                      { q: t('contact.faq.q3'), a: t('contact.faq.a3') },
+                      { q: t('contact.faq.q4'), a: t('contact.faq.a4') },
+                      { q: t('contact.faq.q5'), a: t('contact.faq.a5') }
                   ].map((item, i) => (
                       <div key={i} className="border border-[#2e7d32] bg-[#050a05]">
                           <button 
                             onClick={() => setActiveAccordion(activeAccordion === i ? null : i)}
                             className="w-full flex justify-between items-center p-6 text-left group"
                           >
-                              <span className="font-beast uppercase text-[#a5d6a7] group-hover:text-[#76ff03] transition-colors">{item.q}</span>
+                              <span className={`uppercase text-[#a5d6a7] group-hover:text-[#76ff03] transition-colors ${fontDisplay}`}>{item.q}</span>
                               {activeAccordion === i ? <ChevronUp size={20} className="text-[#76ff03]"/> : <ChevronDown size={20} className="text-[#666]"/>}
                           </button>
                           <AnimatePresence>
@@ -318,7 +345,7 @@ const Contact = () => {
                                     initial={{ height: 0, opacity: 0 }} 
                                     animate={{ height: "auto", opacity: 1 }} 
                                     exit={{ height: 0, opacity: 0 }}
-                                    className="px-6 pb-6 text-[#666] font-mono text-xs uppercase leading-relaxed border-t border-[#2e7d32]/30"
+                                    className={`px-6 pb-6 text-[#666] text-xs uppercase leading-relaxed border-t border-[#2e7d32]/30 ${fontText}`}
                                   >
                                       {item.a}
                                   </motion.div>
@@ -334,22 +361,22 @@ const Contact = () => {
       <section className="py-24 px-6 border-t border-[#2e7d32] bg-[#050a05]">
          <div className="container mx-auto max-w-6xl">
              <div className="text-center mb-16">
-                 <h2 className="text-3xl md:text-5xl font-beast font-black uppercase text-[#e5e5e5]">Pack Leaders</h2>
-                 <p className="text-[#666] font-mono text-xs uppercase">Contact The Team</p>
+                 <h2 className={`text-3xl md:text-5xl uppercase text-[#e5e5e5] ${fontDisplay}`}>{t('contact.team.title')}</h2>
+                 <p className={`text-[#666] text-xs uppercase ${fontText}`}>{t('contact.team.sub')}</p>
              </div>
 
              <div className="grid md:grid-cols-3 gap-8">
                  {[
-                     { role: "General Manager", email: "management@wildsgym.jo", icon: Shield },
-                     { role: "Head Trainer", email: "training@wildsgym.jo", icon: Flame },
-                     { role: "Membership Team", email: "join@wildsgym.jo", icon: CheckCircle2 },
+                     { role: t('contact.team.manager'), icon: Shield },
+                     { role: t('contact.team.trainer'), icon: Flame },
+                     { role: t('contact.team.member'), icon: CheckCircle2 },
                  ].map((elder, i) => (
                      <div key={i} className="bg-[#0d1f0d] p-8 border border-[#2e7d32] text-center hover:border-[#76ff03] transition-colors group">
-                         <elder.icon className="mx-auto text-[#2e7d32] group-hover:text-[#76ff03] transition-colors mb-6" size={40} />
-                         <h4 className="font-beast text-xl uppercase text-white mb-2">{elder.role}</h4>
-                         <a href={`mailto:${elder.email}`} className="text-[#666] font-mono text-xs uppercase hover:text-white transition-colors">
-                             {elder.email}
-                         </a>
+                         <div className="flex justify-center">
+                            <elder.icon className="text-[#2e7d32] group-hover:text-[#76ff03] transition-colors mb-6" size={40} />
+                         </div>
+                         <h4 className={`text-xl uppercase text-white mb-2 ${fontDisplay}`}>{elder.role}</h4>
+                         <p className={`text-[#666] text-xs uppercase ${fontText}`}>{t('contact.team.avail')}</p>
                      </div>
                  ))}
              </div>
@@ -359,24 +386,24 @@ const Contact = () => {
       {/* --- BOTTOM SUMMARY --- */}
       <section className="py-20 px-6 bg-[#0d1f0d] text-center border-t border-[#2e7d32]/50">
           <div className="max-w-2xl mx-auto">
-              <h2 className="text-3xl font-beast font-black uppercase text-[#e5e5e5] mb-6">Wilds Gym — Sweifieh, Amman</h2>
-              <p className="text-[#a5d6a7] font-mono text-xs uppercase leading-relaxed mb-8">
-                  Wilds Gym is a modern fitness center in Amman built for people who want real results.
-                  We offer: Open gym training, Group classes, Personal training, Nutritionist services, Sauna & Jacuzzi.
+              <h2 className={`text-3xl uppercase text-[#e5e5e5] mb-6 ${fontDisplay}`}>
+                  {t('contact.bottom.title')}
+              </h2>
+              <p className={`text-[#a5d6a7] text-xs uppercase leading-relaxed mb-8 ${fontText}`}>
+                  {t('contact.bottom.desc')}
               </p>
-              <p className="text-[#76ff03] font-beast text-xl uppercase mb-8">"You bring the will. We provide the space."</p>
+              <p className={`text-[#76ff03] text-xl uppercase mb-8 ${fontDisplay}`}>"{t('contact.bottom.quote')}"</p>
               
-              <div className="grid md:grid-cols-2 gap-8 text-[#666] font-mono text-xs uppercase">
+              <div className={`grid md:grid-cols-2 gap-8 text-[#666] text-xs uppercase ${fontText}`}>
                   <div>
-                      <h4 className="text-white mb-2 font-bold">Contact Details</h4>
-                      <p>Paris Street, Sweifieh – Amman</p>
+                      <h4 className="text-white mb-2 font-bold">{t('contact.bottom.contact')}</h4>
+                      <p>{isArabic ? 'شارع باريس، الصويفية – عمان' : 'Paris Street, Sweifieh – Amman'}</p>
                       <p>📞 079 888 5011</p>
-                      <p>📧 info@wildsgym.com</p>
                   </div>
                   <div>
-                      <h4 className="text-white mb-2 font-bold">Hours</h4>
-                      <p>Saturday – Thursday: 06:00 – 23:00</p>
-                      <p>Friday: 14:00 – 21:00</p>
+                      <h4 className="text-white mb-2 font-bold">{t('contact.bottom.hours')}</h4>
+                      <p>{t('footer.days')}: 06:00 – 23:00</p>
+                      <p>{t('footer.friday')}: 14:00 – 21:00</p>
                   </div>
               </div>
           </div>
