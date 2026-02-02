@@ -41,7 +41,6 @@ const About = () => {
   };
 
   // --- CRASH FIX: SAFETY CHECK ---
-  // If translation fails, fallback to an empty array so the page doesn't crash (Black Screen)
   const rawList = t('about.list', { returnObjects: true });
   const featureList = Array.isArray(rawList) ? rawList : [];
 
@@ -60,22 +59,26 @@ const About = () => {
               y: ySlow, 
               backgroundImage: `url(${JUNGLE_BG_1})` 
             }} 
-            className="absolute top-0 left-0 w-full h-[120vh] opacity-10 bg-cover bg-center mix-blend-overlay" 
+            className="absolute top-0 left-0 w-full h-[120vh] opacity-[0.03] bg-cover bg-center mix-blend-screen" 
           />
       </div>
 
       {/* --- HERO --- */}
       <section className="relative min-h-[80vh] flex flex-col justify-center px-6 z-10 pt-20 border-b border-wild-dark/30">
-        <motion.div style={{ y: yFast }} className="absolute top-0 right-0 w-3/4 h-full opacity-30 grayscale pointer-events-none z-[-1]">
-          <img src={JUNGLE_BG_2} className="w-full h-full object-cover mask-image-b" alt="Jungle Texture" />
-          <div className="absolute inset-0 bg-gradient-to-l from-wild-black via-wild-black/50 to-transparent"></div>
+        
+        {/* HERO BUSHES (Kept Prominent as requested previously) */}
+        <motion.div style={{ y: yFast }} className="absolute top-0 right-0 w-full md:w-3/4 h-full opacity-30 grayscale pointer-events-none z-[-1]">
+          <img src={JUNGLE_BG_2} className="w-full h-full object-cover" alt="Jungle Texture" />
+          <div className="absolute inset-0 bg-gradient-to-l from-wild-black via-wild-black/80 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-wild-black via-transparent to-transparent"></div>
         </motion.div>
         
         <div className="container mx-auto relative">
           <motion.div initial="hidden" animate="visible" variants={fadeInUp} className="max-w-5xl">
             <h1 className={`text-5xl md:text-[7rem] uppercase mb-8 relative ${fontDisplay}`}>
               {isArabic ? 'عن' : 'About'} <span className="text-wild-accent relative z-10">{isArabic ? 'وايلدز جيم' : 'Wilds Gym'}</span> <br/> {isArabic ? 'في عمان' : 'in Amman'}
-              <motion.img src={LEAF_1} style={{ rotate: rotateLeaf }} className={`absolute -top-20 w-48 md:w-80 grayscale brightness-50 opacity-50 -z-10 pointer-events-none ${isArabic ? '-left-20' : '-right-20'}`} />
+              {/* Hero Leaf: Made slightly smaller on mobile to avoid covering title */}
+              <motion.img src={LEAF_1} style={{ rotate: rotateLeaf }} className={`absolute -top-10 md:-top-20 w-32 md:w-80 grayscale brightness-50 opacity-50 -z-10 pointer-events-none ${isArabic ? '-left-10 md:-left-20' : '-right-10 md:-right-20'}`} />
             </h1>
             <p className={`text-xl md:text-2xl uppercase leading-relaxed text-wild-gray border-wild-accent max-w-3xl ${fontText} ${borderStart}`}>
               {t('about.subtitle')}
@@ -84,7 +87,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* --- SECTION 1: WHO WE ARE --- */}
+      {/* --- SECTION 1: WHO WE ARE (FIXED LEAF) --- */}
       <section className="py-32 px-6 relative z-10">
         <div className="container mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
           
@@ -97,7 +100,12 @@ const About = () => {
           >
              <div className="aspect-[3/4] relative overflow-hidden border-2 border-wild-dark shadow-2xl shadow-wild-black">
                 <img src="https://images.unsplash.com/photo-1641337221253-fdc7237f6b61?w=500&auto=format&fit=crop" className="w-full h-full object-cover grayscale brightness-75 contrast-115" alt="Gym Community" />
-                <img src={LEAF_2} className={`absolute -bottom-20 w-80 rotate-45 grayscale brightness-25 opacity-80 pointer-events-none ${isArabic ? '-right-20' : '-left-20'}`} />
+                
+                {/* FIX 1: LEAF_2 - Smaller on Mobile, Lower Opacity, Better Blend */}
+                <img 
+                  src={LEAF_2} 
+                  className={`absolute -bottom-10 md:-bottom-20 w-32 md:w-80 rotate-45 grayscale brightness-50 opacity-40 mix-blend-multiply pointer-events-none ${isArabic ? '-right-10 md:-right-20' : '-left-10 md:-left-20'}`} 
+                />
              </div>
           </motion.div>
 
@@ -116,7 +124,6 @@ const About = () => {
               </p>
               
               <ul className="grid grid-cols-1 gap-2 pt-4">
-                 {/* SAFE MAPPING: Now using featureList which is guaranteed to be an array */}
                  {featureList.map((item: string, i: number) => (
                     <li key={i} className="flex items-start gap-3 text-wild-accent text-xs">
                        <CheckCircle2 size={14} className="mt-1 shrink-0"/> <span className={`text-wild-gray ${isArabic ? 'font-cairo font-bold' : ''}`}>{item}</span>
@@ -131,7 +138,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* --- SECTION 2: TRAINING APPROACH --- */}
+      {/* --- SECTION 2: TRAINING APPROACH (FIXED LEAF) --- */}
       <section className="py-32 px-6 relative z-10">
         <div className="absolute inset-0 bg-wild-dark/40 skew-y-3 z-0 pointer-events-none"></div>
 
@@ -146,7 +153,12 @@ const About = () => {
           >
              <div className="aspect-[16/9] relative overflow-hidden border-2 border-wild-dark shadow-2xl shadow-wild-black lg:translate-x-12">
                 <img src="https://images.unsplash.com/photo-1584466977773-e625c37cdd50?q=80&w=387&auto=format&fit=crop" className="w-full h-full object-cover grayscale brightness-50 contrast-120" alt="Training Approach" />
-                <img src={LEAF_1} className={`absolute -top-24 w-96 -rotate-12 grayscale brightness-25 opacity-70 pointer-events-none ${isArabic ? '-left-24' : '-right-24'}`} />
+                
+                {/* FIX 2: LEAF_1 - Drastically reduced mobile size, tighter positioning, lower opacity */}
+                <img 
+                  src={LEAF_1} 
+                  className={`absolute -top-10 md:-top-24 w-40 md:w-96 -rotate-12 grayscale brightness-50 opacity-30 mix-blend-multiply pointer-events-none ${isArabic ? '-left-10 md:-left-24' : '-right-10 md:-right-24'}`} 
+                />
              </div>
           </motion.div>
 
