@@ -2,7 +2,7 @@ import { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import { 
   ArrowRight, ArrowLeft, MapPin, Clock, Zap, Skull, Dumbbell, 
-  Users, Flame, Leaf, Brain, Moon, Swords, Crown, ShieldCheck 
+  Users, Flame, Leaf, Brain, Moon, Swords 
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next'; 
 
@@ -16,30 +16,30 @@ const ThreeDCarousel = lazy(() => import('../components/ui/3d-carousel').then(mo
 import logoImg from '../assets/logo.png'; 
 import threeDBg from '../assets/3D-BG.png';
 
+// --- NEW IMAGES ---
+// import heroBg from '../assets/homepage-header.jpeg'; // <--- UNUSED NOW, REVERTED TO URL
+import facilityImg from '../assets/homepage-open-gym.jpeg'; 
+import habitat from '../assets/habitat-atmosphere.jpg';    
+
+// --- CONSTANTS ---
+// RESTORED THE UNSPLASH JUNGLE URL
 const JUNGLE_BG_URL = "https://plus.unsplash.com/premium_photo-1686899171869-4d80f6f9d315?w=500&auto=format&fit=crop";
 const WOOD_LOG_URL = "https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?q=80&w=2070&auto=format&fit=crop";
-const IMG_FACILITY = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070";
 const WHATSAPP_LINK = "https://wa.me/962798885011?text=Hi,%20I%20want%20to%20enter%20the%20wild.";
 
-// --- VIBE CARD COMPONENT (FIXED POSITIONING) ---
+// --- VIBE CARD COMPONENT ---
 const VibeCard = ({ icon: Icon, title, desc, delay, z, x, y, isArabic }: any) => {
   return (
     <motion.div 
-      // 1. Static Positioning: Use standard CSS style to lock position
       style={{ 
         zIndex: z, 
         top: y, 
-        // FIX: If Arabic, anchor to Right. If English, anchor to Left.
-        // This ensures the "scatter" pattern flips perfectly.
         [isArabic ? 'right' : 'left']: x,
         position: 'absolute'
       }}
-      
-      // 2. Animation: Simple Fade Up (No complex X/Y calculations)
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: delay, duration: 0.8, type: "spring" }}
-      
       className="w-48 p-4 bg-[#0d1f0d]/80 backdrop-blur-md border border-[#76ff03]/30 rounded-xl shadow-2xl flex flex-col gap-2"
     >
       <div className={`flex items-center gap-2 text-[#76ff03] mb-1 ${isArabic ? 'flex-row-reverse' : 'flex-row'}`}>
@@ -98,6 +98,7 @@ const Home = () => {
         
         {/* ================= HERO SECTION ================= */}
         <section className="relative h-screen min-h-[800px] flex items-center justify-center overflow-hidden bg-[#0d1f0d]">
+          {/* UPDATED: Reverted back to JUNGLE_BG_URL */}
           <div className="absolute inset-0 z-0 bg-cover bg-center opacity-40 grayscale-[30%]" style={{ backgroundImage: `url('${JUNGLE_BG_URL}')` }}></div>
           <div className="absolute inset-0 z-10 bg-[#050a05]/60 mix-blend-multiply"></div>
           <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'radial-gradient(circle at center, transparent 0%, #0d1f0d 100%)', boxShadow: 'inset 0 0 200px 100px #0d1f0d' }}></div>
@@ -184,7 +185,8 @@ const Home = () => {
                 <div className="relative h-[400px] border border-[#2e7d32] p-4 rotate-3">
                     <div className="w-full h-full bg-[#0d1f0d] relative overflow-hidden">
                         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
-                        <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070" className="w-full h-full object-cover grayscale contrast-125 opacity-60" alt="Habitat Atmosphere" />
+                        {/* Using Habitat image for now (slanted middle image) */}
+                        <img loading='lazy' src={habitat} className="w-full h-full object-cover contrast-10 opacity-60" alt="Habitat Atmosphere" />
                         <div className={`absolute bottom-4 ${isArabic ? 'left-4' : 'right-4'} text-[#76ff03] font-beast text-6xl opacity-20`}>HABITAT</div>
                     </div>
                 </div>
@@ -196,25 +198,19 @@ const Home = () => {
             <div className="container mx-auto">
                 <div className="text-center mb-16">
                     <h2 className={`text-4xl md:text-6xl uppercase text-[#e8f5e8] mb-4 ${fontDisplay}`}>
-                        {t('home.code.title')}
+                        {t('home.code.heading')}
                     </h2>
                     <div className="w-24 h-1 bg-[#76ff03] mx-auto"></div>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[
-                        // 1. Raw Arsenal
-                        { icon: Dumbbell, title: t('home.vibe.arsenal.title', 'Raw Arsenal'), desc: t('home.vibe.arsenal.desc', 'Heavy dumbbells. Calibrated plates.'), color: "text-[#76ff03]" },
-                        // 2. Recovery Zone
-                        { icon: Flame, title: isArabic ? "منطقة التعافي" : "Recovery Zone", desc: isArabic ? "ساونا وجاكوزي للاستشفاء." : "Post-training rituals. Sauna & Jacuzzi.", color: "text-[#ff4d00]" },
-                        // 3. The Tribe
-                        { icon: Users, title: t('home.vibe.pack.title', 'The Tribe'), desc: t('home.vibe.pack.desc', 'You are shaped by the people around you.'), color: "text-[#ffd700]" },
-                        // 4. Mental Warfare
-                        { icon: Brain, title: isArabic ? "حرب ذهنية" : "Mental Warfare", desc: isArabic ? "الانضباط أهم من التحفيز." : "Discipline beats motivation. We coach the mind too.", color: "text-[#00bcd4]" },
-                        // 5. Atmosphere
-                        { icon: Moon, title: isArabic ? "الجو العام" : "Atmosphere", desc: isArabic ? "إضاءة خافتة. تركيز عالي." : "Dark lighting. Heavy bass. Focused environment.", color: "text-[#d946ef]" },
-                        // 6. No Comfort
-                        { icon: Swords, title: isArabic ? "بلا راحة" : "No Comfort", desc: isArabic ? "الراحة عدو التطور." : "Comfort is the enemy of growth. We removed it.", color: "text-[#ef4444]" }
+                        { icon: Dumbbell, title: t('home.code.items.arsenal.title', 'Raw Arsenal'), desc: t('home.code.items.arsenal.desc', 'Heavy dumbbells. Calibrated plates.'), color: "text-[#76ff03]" },
+                        { icon: Flame, title: t('home.code.items.recovery.title', 'Recovery Zone'), desc: t('home.code.items.recovery.desc', 'Sauna & Jacuzzi.'), color: "text-[#ff4d00]" },
+                        { icon: Users, title: t('home.code.items.tribe.title', 'The Tribe'), desc: t('home.code.items.tribe.desc', 'Train with beasts.'), color: "text-[#ffd700]" },
+                        { icon: Brain, title: t('home.code.items.mental.title', 'Mental Warfare'), desc: t('home.code.items.mental.desc', 'Discipline beats motivation.'), color: "text-[#00bcd4]" },
+                        { icon: Moon, title: t('home.code.items.atm.title', 'Atmosphere'), desc: t('home.code.items.atm.desc', 'Focused environment.'), color: "text-[#d946ef]" },
+                        { icon: Swords, title: t('home.code.items.comfort.title', 'No Comfort'), desc: t('home.code.items.comfort.desc', 'Comfort is the enemy of growth.'), color: "text-[#ef4444]" }
                     ].map((item, i) => (
                         <motion.div 
                             key={i}
@@ -236,7 +232,7 @@ const Home = () => {
             </div>
         </section>
 
-        {/* ================= FACILITIES ================= */}
+        {/* ================= FACILITIES (OPEN GYM) ================= */}
         <section className="py-24 px-6 bg-[#0a140a] border-y border-[#2e7d32]/50">
             <div className="container mx-auto grid lg:grid-cols-2 gap-16 items-center">
                 <motion.div initial={{ opacity: 0, x: isArabic ? 50 : -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
@@ -267,10 +263,10 @@ const Home = () => {
                 <div className="relative h-[500px] border-2 border-[#2e7d32] p-2">
                     <div className="w-full h-full bg-[#0d1f0d] relative overflow-hidden">
                         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
-                        <img src={IMG_FACILITY} className="w-full h-full object-cover grayscale brightness-50" alt="Gym Interior" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <Dumbbell className="text-[#2e7d32] opacity-40" size={200} />
-                        </div>
+                        
+                        {/* UPDATED: REMOVED grayscale and brightness so it's full color */}
+                        <img src={facilityImg} className="w-full h-full object-cover" alt="Gym Interior" />
+                        
                         <div className={`absolute bottom-8 ${isArabic ? 'right-8 text-right' : 'left-8 text-left'}`}>
                             <p className="font-mono text-xs text-[#76ff03] uppercase tracking-widest">Location: Paris Street</p>
                             <p className="font-mono text-xs text-[#76ff03] uppercase tracking-widest">Status: Ready for War</p>
@@ -305,8 +301,8 @@ const Home = () => {
         {/* ================= FOOTER ================= */}
         <div className="py-12 bg-[#050a05] border-t border-[#2e7d32] text-center">
             <div className="container mx-auto flex flex-wrap justify-center gap-8 text-[#4caf50] font-mono text-xs uppercase tracking-[0.2em]">
-               <span className={`flex items-center gap-2 ${isArabic ? 'flex-row-reverse' : ''}`}><MapPin size={14}/> Paris Street, Sweifieh</span>
-               <span className={`flex items-center gap-2 ${isArabic ? 'flex-row-reverse' : ''}`}><Clock size={14}/> 06:00–23:00 Daily</span>
+               <span className={`flex items-center gap-2 ${isArabic ? 'flex-row-reverse' : ''}`}><MapPin size={14}/> {isArabic ? 'شارع باريس، الصويفية – عمان' : 'Paris Street, Sweifieh – Amman'}</span>
+               <span className={`flex items-center gap-2 ${isArabic ? 'flex-row-reverse' : ''}`}><Clock size={14}/> {isArabic ? 'يومياً 06:00 – 23:00' : '06:00–23:00 Daily'}</span>
             </div>
         </div>
 

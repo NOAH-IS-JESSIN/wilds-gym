@@ -1,23 +1,22 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { 
-  Dumbbell, Users, Crown, Utensils, Droplets, 
-  MapPin, Clock, Phone, ArrowRight, ArrowLeft 
+  Dumbbell, Crown, Utensils, Droplets, 
+  MapPin, Clock, Phone, ArrowRight, ArrowLeft, CheckCircle2 
 } from 'lucide-react';
-import { useTranslation } from 'react-i18next'; // <--- LOCALIZATION HOOK
+import { useTranslation } from 'react-i18next'; 
 
 // --- SEO ---
 import Head from '../components/seo/Head';
 
 // --- ASSETS ---
-import junglePath from '../assets/jungle-path.jpg'; 
-import imgNutrition from '../assets/nutrition.jpg';
-import imgSauna from '../assets/jacuzzi-sauna.jpg';    
-
-const IMG_HERO = "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=2074"; 
-const IMG_OPEN_GYM = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070"; 
-const IMG_GROUP = "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070"; 
-const IMG_PT = "https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?q=80&w=2073"; 
+// Make sure these exact files exist in src/assets/
+import img1 from '../assets/services-1.jpeg'; // Hero
+import img2 from '../assets/services-2.jpeg'; // Open Gym
+import img3 from '../assets/services-3.jpeg'; // Personal Training
+import img4 from '../assets/services-4.jpg';  // Nutrition
+import img5 from '../assets/services-5.jpeg'; // Recovery
+import junglePath from '../assets/jungle-path.jpg'; // Keeping the background texture if you have it, or use a generic one
 
 const Services = () => {
   const { t, i18n } = useTranslation();
@@ -29,7 +28,6 @@ const Services = () => {
   // --- TYPOGRAPHY & LAYOUT LOGIC ---
   const fontDisplay = isArabic ? 'font-cairo font-black leading-tight' : 'font-beast font-black tracking-tighter leading-[0.9]';
   const fontText = isArabic ? 'font-cairo font-bold text-sm' : 'font-mono text-sm tracking-widest';
-  const textAlign = isArabic ? 'text-right' : 'text-left';
   const borderStart = isArabic ? 'border-r-2 pr-6' : 'border-l-2 pl-6';
   const borderStartSmall = isArabic ? 'border-r-2 pr-6' : 'border-l-2 pl-6';
 
@@ -43,50 +41,25 @@ const Services = () => {
   return (
     <div ref={containerRef} className="bg-[#0d1f0d] text-[#e8f5e8] pt-20 overflow-x-hidden relative font-sans selection:bg-[#76ff03] selection:text-black" dir={isArabic ? 'rtl' : 'ltr'}>
       
-      {/* --- SEO --- */}
       <Head 
         title={isArabic ? "خدمات وايلدز جيم | تدريب شخصي وتغذية في عمان" : "Services | Personal Training, Nutrition & Recovery in Amman"}
         description={t('services.heroDesc')}
       />
 
-      {/* --- CSS ANIMATIONS --- */}
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translate(0, 0); opacity: 0.5; }
-          50% { transform: translate(10px, -20px); opacity: 1; }
-        }
-        @keyframes fog-drift {
-          0% { transform: translateX(-10%); }
-          50% { transform: translateX(10%); }
-          100% { transform: translateX(-10%); }
-        }
-        .firefly {
-          position: absolute; width: 4px; height: 4px; background-color: #76ff03; border-radius: 50%; opacity: 0; animation: float 6s infinite ease-in-out; will-change: transform, opacity; box-shadow: 0 0 10px #76ff03;
-        }
-        .fog-layer {
-          background: radial-gradient(circle, rgba(46,125,50,0.15) 0%, rgba(0,0,0,0) 70%); animation: fog-drift 20s infinite linear; will-change: transform;
-        }
-      `}</style>
-
       {/* --- ATMOSPHERE --- */}
       <div className="fixed inset-0 pointer-events-none z-0">
          <div className="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-         <div className="absolute inset-0 fog-layer opacity-40 mix-blend-screen"></div>
-         <div className="firefly" style={{ top: '20%', left: '10%', animationDelay: '0s' }}></div>
-         <div className="firefly" style={{ top: '50%', left: '80%', animationDelay: '2s' }}></div>
-         <div className="firefly" style={{ top: '80%', left: '30%', animationDelay: '4s' }}></div>
          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#76ff03] blur-[250px] opacity-5"></div>
       </div>
 
-      {/* --- HERO --- */}
+      {/* --- HERO (IMAGE 1) --- */}
       <section className="relative h-[90vh] flex flex-col justify-center items-center text-center px-6 overflow-hidden border-b border-[#1b5e20]">
         <motion.div style={{ y: yParallax }} className="absolute inset-0 z-0 will-change-transform">
-             <div className="absolute inset-0 bg-black/50 z-10"></div>
-             <img src={IMG_HERO} className="w-full h-full object-cover grayscale-[0.3]" alt="Jungle Canopy" />
+             <div className="absolute inset-0 bg-black/40 z-10"></div>
+             {/* FULL COLOR HERO */}
+             <img src={img1} className="w-full h-full object-cover" alt="Wilds Gym Hero" />
         </motion.div>
         
-        <div className={`absolute top-0 w-32 md:w-64 opacity-60 z-20 pointer-events-none drop-shadow-lg bg-[url('https://www.transparenttextures.com/patterns/black-orchid.png')] h-full ${isArabic ? 'right-10' : 'left-10'}`}></div>
-
         <div className="relative z-30 max-w-5xl">
           <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
             <h2 className={`text-[#76ff03] uppercase tracking-[0.5em] mb-6 ${isArabic ? 'font-cairo font-bold text-xl' : 'font-beast text-lg md:text-xl'}`}>
@@ -101,20 +74,18 @@ const Services = () => {
                     ? 'من تمارين الحديد للتغذية والاستشفاء، وايلدز جيم في شارع باريس بوفرلك كل اشي بتحتاجه عشان تتمرن صح وتبني جسم قوي.' 
                     : 'From strength training to recovery and nutrition, Wilds Gym on Paris Street in Sweifieh offers everything you need to train better, feel stronger, and build real results.'}
                 </p>
-                <p className={`text-sm uppercase text-[#76ff03] ${fontText}`}>
-                  {t('services.heroDesc')}
-                </p>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* --- SERVICE 1: OPEN GYM --- */}
+      {/* --- SERVICE 1: OPEN GYM (IMAGE 2) --- */}
       <section className="py-24 px-6 relative z-10">
         <div className="container mx-auto grid lg:grid-cols-2 gap-16 items-center">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="relative group">
                 <div className="aspect-[4/5] overflow-hidden border-2 border-[#2e7d32] rounded-sm relative z-10 bg-[#0d1f0d]">
-                    <img loading="lazy" src={IMG_OPEN_GYM} className="w-full h-full object-cover grayscale brightness-75 group-hover:scale-105 transition-transform duration-700" alt="Open Gym" />
+                    {/* FULL COLOR IMAGE */}
+                    <img loading="lazy" src={img2} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Open Gym" />
                 </div>
             </motion.div>
 
@@ -138,7 +109,9 @@ const Services = () => {
                             isArabic ? "مناطق تمرين نظيفة ومرتبة" : "Clean, organized workout areas", 
                             isArabic ? "ساعات دوام طويلة (06:00 – 23:00)" : "Long opening hours (06:00–23:00)"
                         ].map((item, i) => (
-                            <li key={i} className="text-[#f1f8e9]">• {item}</li>
+                            <li key={i} className="text-[#f1f8e9] flex items-center gap-2">
+                                <CheckCircle2 size={14} className="text-[#76ff03]"/> {item}
+                            </li>
                         ))}
                     </ul>
                     <p className={`text-[#76ff03] text-lg tracking-wide ${isArabic ? 'font-cairo font-black' : 'font-beast'}`}>
@@ -149,65 +122,22 @@ const Services = () => {
         </div>
       </section>
 
-      {/* --- SERVICE 2: GROUP TRAINING --- */}
-      <section className="py-24 px-6 relative z-10 bg-[#1b5e20]/10 border-y border-[#2e7d32]/30">
-        <div className="container mx-auto grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div className="order-2 lg:order-1" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
-                <div className="flex items-center gap-4 mb-4">
-                    <Users className="text-[#76ff03]" size={32} />
-                    <span className={`text-[#76ff03] text-xs uppercase tracking-widest ${fontText}`}>
-                        {isArabic ? 'منطقة القطيع' : 'The Pack Territory'}
-                    </span>
-                </div>
-                <h2 className={`text-4xl md:text-6xl uppercase mb-6 text-[#e8f5e8] ${fontDisplay}`}>
-                    {t('services.groupTitle')}
-                </h2>
-                <div className={`space-y-6 text-[#a5d6a7] uppercase leading-relaxed ${fontText}`}>
-                    <p>{isArabic ? 'للناس اللي بحبوا طاقة المجموعة، وايلدز بقدم حصص تدريبية بقيادة كباتن محترفين. الحصص بتساعدك:' : 'For those who thrive in a tribe, Wilds Gym offers group training sessions led by professional coaches. Group classes help you:'}</p>
-                    <ul className="space-y-2 mb-4">
-                        {[
-                            isArabic ? "تضلك ملتزم" : "Stay consistent", 
-                            isArabic ? "تتمرن بطاقة عالية" : "Train with energy", 
-                            isArabic ? "تتعلم التتكنيك الصح" : "Learn proper technique", 
-                            isArabic ? "تحس إنك جزء من عيلة" : "Feel part of a community"
-                        ].map((item, i) => (
-                            <li key={i} className="flex gap-2 items-center"><span className="w-1 h-1 bg-[#76ff03] rounded-full"></span> {item}</li>
-                        ))}
-                    </ul>
-                    <p className={`text-[#76ff03] text-lg tracking-wide ${isArabic ? 'font-cairo font-black' : 'font-beast'}`}>
-                        {t('services.groupDesc')}
-                    </p>
-                </div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="relative group order-1 lg:order-2">
-                <div className="aspect-[16/9] overflow-hidden border-2 border-[#76ff03]/50 rounded-sm relative z-10 bg-[#0d1f0d]">
-                    <img loading="lazy" src={IMG_GROUP} className="w-full h-full object-cover grayscale brightness-50 contrast-125 group-hover:scale-105 transition-transform duration-700" alt="Group Training" />
-                </div>
-            </motion.div>
-        </div>
-      </section>
-
       {/* ===================================================================================== */}
-      {/* === MEGA SECTION: THE JUNGLE PATH (Unified Background) === */}
+      {/* === MEGA SECTION: PERSONAL TRAINING & WELLNESS (Unified Background) === */}
       {/* ===================================================================================== */}
       <section className="py-32 relative z-10 border-t border-[#2e7d32]/30 overflow-hidden">
         
         {/* --- SHARED BACKGROUND --- */}
         <div className="absolute inset-0 z-0">
-            <img 
-                src={junglePath} 
-                alt="Jungle Path" 
-                className="w-full h-full object-cover opacity-60 grayscale-[0.2]"
-            />
-            {/* Dark Overlay for readability */}
+            {/* If you have the junglePath image, keeps it as texture, otherwise use generic */}
+            <img src={junglePath} alt="Texture" className="w-full h-full object-cover opacity-60 grayscale-[0.2]" />
             <div className="absolute inset-0 bg-[#0d1f0d]/80 mix-blend-multiply"></div>
             <div className="absolute inset-0 bg-gradient-to-b from-[#0d1f0d] via-transparent to-[#0d1f0d]"></div>
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
 
-            {/* --- PART 1: PERSONAL TRAINING (THE ALPHA PATH) --- */}
+            {/* --- SERVICE 2: PERSONAL TRAINING (IMAGE 3) --- */}
             <div className="mb-40 pt-16">
                 <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className="text-center mb-16">
                     <div className="inline-flex items-center gap-2 border border-[#76ff03] px-4 py-2 rounded-full mb-6 bg-[#76ff03]/5 backdrop-blur-md">
@@ -250,9 +180,10 @@ const Services = () => {
                         </p>
                     </div>
                     
-                    {/* Image Box */}
-                    <div className="relative aspect-video border-2 border-[#76ff03]/50 bg-[#0d1f0d] shadow-2xl">
-                        <img loading="lazy" src={IMG_PT} className="w-full h-full object-cover grayscale brightness-75 contrast-125" alt="Personal Training" />
+                    {/* Image Box (IMAGE 3) */}
+                    <div className="relative aspect-video border-2 border-[#76ff03]/50 bg-[#0d1f0d] shadow-2xl overflow-hidden">
+                        {/* FULL COLOR IMAGE */}
+                        <img loading="lazy" src={img3} className="w-full h-full object-cover contrast-110" alt="Personal Training" />
                         <div className={`absolute bottom-6 ${isArabic ? 'right-6' : 'left-6'}`}>
                             <p className={`text-[#76ff03] text-4xl uppercase drop-shadow-lg ${fontDisplay}`}>
                                 {isArabic ? '"صير القمة."' : '"Become the Apex."'}
@@ -262,35 +193,30 @@ const Services = () => {
                 </div>
             </div>
 
-            {/* --- PART 2: NUTRITION & RECOVERY --- */}
+            {/* --- SERVICE 3 & 4: NUTRITION & RECOVERY (IMAGES 4 & 5) --- */}
             <div className="mb-40 grid lg:grid-cols-2 gap-24 lg:gap-20">
-                {/* NUTRITION */}
+                {/* NUTRITION (IMAGE 4) */}
                 <motion.div 
                     initial={{ opacity: 0 }} 
                     whileInView={{ opacity: 1 }} 
                     viewport={{ once: true }} 
                     className="relative w-full max-w-[550px] mx-auto aspect-video group overflow-hidden border border-[#76ff03]/30 bg-[#0d1f0d]/10 backdrop-blur-sm hover:border-[#76ff03] transition-all"
                 >
-                    <img loading="lazy" src={imgNutrition} className="absolute inset-0 w-full h-full object-cover grayscale brightness-[1.2] group-hover:scale-105 transition-transform duration-700" alt="Nutrition" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-[#0d1f0d]/60 to-transparent"></div>
+                    {/* FULL COLOR IMAGE */}
+                    <img loading="lazy" src={img4} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Nutrition" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-[#0d1f0d]/30 to-transparent"></div>
                     
                     <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center p-12">
-                        <div className="flex items-center gap-2 mb-2 text-[#4caf50]">
+                        <div className="flex items-center gap-2 mb-2 text-[#4caf50] bg-black/60 px-3 py-1 rounded-full backdrop-blur-sm">
                             <Utensils size={20} /> <span className={`text-[10px] uppercase tracking-widest ${fontText}`}>{isArabic ? 'الوقود' : 'The Fuel'}</span>
                         </div>
                         <h3 className={`text-3xl md:text-4xl uppercase text-[#e8f5e8] mb-4 drop-shadow-md ${fontDisplay}`}>
                             {t('services.nutritionTitle')}
                         </h3>
-                        <p className={`text-[#a5d6a7] text-xs md:text-sm mb-4 uppercase leading-relaxed max-w-[300px] ${fontText}`}>
-                            {t('services.nutritionDesc')}
-                        </p>
-                        <p className={`text-[#f1f8e9] text-xs font-bold uppercase border-b border-[#4caf50] pb-1 ${fontText}`}>
-                            {isArabic ? 'اربط التمرين بالنتائج.' : 'Connect workouts to results.'}
-                        </p>
                     </div>
                 </motion.div>
 
-                {/* RECOVERY */}
+                {/* RECOVERY (IMAGE 5) */}
                 <motion.div 
                     initial={{ opacity: 0 }} 
                     whileInView={{ opacity: 1 }} 
@@ -298,27 +224,22 @@ const Services = () => {
                     transition={{ delay: 0.1 }} 
                     className="relative w-full max-w-[550px] mx-auto aspect-video group overflow-hidden border border-[#00bcd4]/30 bg-[#0d1f0d]/40 backdrop-blur-sm hover:border-[#00bcd4] transition-all"
                 >
-                    <img loading="lazy" src={imgSauna} className="absolute inset-0 w-full h-full object-cover grayscale brightness-[1.2] group-hover:scale-105 transition-transform duration-700" alt="Recovery" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-[#0d1f0d]/50 to-transparent"></div>
+                    {/* FULL COLOR IMAGE */}
+                    <img loading="lazy" src={img5} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Recovery" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-[#0d1f0d]/30 to-transparent"></div>
                     
                     <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center p-12">
-                        <div className="flex items-center gap-2 mb-2 text-[#00bcd4]">
+                        <div className="flex items-center gap-2 mb-2 text-[#00bcd4] bg-black/60 px-3 py-1 rounded-full backdrop-blur-sm">
                             <Droplets size={20} /> <span className={`text-[10px] uppercase tracking-widest ${fontText}`}>{isArabic ? 'الينابيع' : 'The Springs'}</span>
                         </div>
                         <h3 className={`text-3xl md:text-4xl uppercase text-[#e8f5e8] mb-4 drop-shadow-md ${fontDisplay}`}>
                             {t('services.recoveryTitle')}
                         </h3>
-                        <p className={`text-[#a5d6a7] text-xs md:text-sm mb-4 uppercase leading-relaxed max-w-[300px] ${fontText}`}>
-                            {t('services.recoveryDesc')}
-                        </p>
-                        <p className={`text-[#f1f8e9] text-xs font-bold uppercase border-b border-[#00bcd4] pb-1 ${fontText}`}>
-                            {isArabic ? 'تدرّب بقوة. تعافى جيداً.' : 'Train hard. Recover well.'}
-                        </p>
                     </div>
                 </motion.div>
             </div>
 
-            {/* --- PART 3: CHOOSE YOUR PATH (GLASS CARDS) --- */}
+            {/* --- PATH SELECTION --- */}
             <div>
                 <div className="text-center mb-16">
                     <h2 className={`text-4xl md:text-6xl uppercase mb-4 text-[#f1f8e9] drop-shadow-lg ${fontDisplay}`}>
@@ -330,11 +251,10 @@ const Services = () => {
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-4 gap-6">
+                <div className="grid md:grid-cols-3 gap-6">
                     {[
-                        { title: isArabic ? "المستجدين" : "Newcomers", desc: isArabic ? "تدريب شخصي أو حصص" : "Personal Training or Group Classes", color: "text-[#76ff03]", border: "hover:border-[#76ff03]" },
-                        { title: isArabic ? "المستكشفين" : "Explorers", desc: isArabic ? "جيم + حصص" : "Open Gym + Classes", color: "text-[#f1f8e9]", border: "hover:border-[#f1f8e9]" },
                         { title: isArabic ? "صيادين القمة" : "Apex Hunters", desc: isArabic ? "دخول حر (Free Roam)" : "Open Gym (Free Roam)", color: "text-[#ffd700]", border: "hover:border-[#ffd700]" },
+                        { title: isArabic ? "المستجدين" : "Newcomers", desc: isArabic ? "تدريب شخصي" : "Personal Training", color: "text-[#76ff03]", border: "hover:border-[#76ff03]" },
                         { title: isArabic ? "كل القبيلة" : "All Tribe", desc: isArabic ? "تغذية وينابيع مقدسة" : "Nutrition & Sacred Springs", color: "text-[#00bcd4]", border: "hover:border-[#00bcd4]" },
                     ].map((path, i) => (
                         <div key={i} className={`relative p-10 flex items-center justify-center group h-[200px] backdrop-blur-md bg-white/5 border border-white/10 rounded-lg shadow-2xl transition-all ${path.border}`}>

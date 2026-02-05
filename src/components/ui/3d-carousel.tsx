@@ -9,6 +9,19 @@ import {
   useTransform,
 } from "framer-motion"
 
+// --- IMPORT REAL IMAGES ---
+import img1 from '../../assets/carousel-1.jpeg';
+import img2 from '../../assets/carousel-2.jpeg';
+import img3 from '../../assets/carousel-3.jpeg';
+import img4 from '../../assets/carousel-4.jpeg';
+import img5 from '../../assets/carousel-5.jpeg';
+import img6 from '../../assets/carousel-6.jpeg';
+import img7 from '../../assets/carousel-7.jpeg';
+
+// --- IMAGE ARRAY ---
+const gymImages = [img1, img2, img3, img4, img5, img6, img7];
+
+// --- HOOKS ---
 export const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect
 
@@ -27,51 +40,32 @@ export function useMediaQuery(
   }: UseMediaQueryOptions = {}
 ): boolean {
   const getMatches = (query: string): boolean => {
-    if (IS_SERVER) {
-      return defaultValue
-    }
+    if (IS_SERVER) return defaultValue
     return window.matchMedia(query).matches
   }
 
   const [matches, setMatches] = useState<boolean>(() => {
-    if (initializeWithValue) {
-      return getMatches(query)
-    }
+    if (initializeWithValue) return getMatches(query)
     return defaultValue
   })
 
-  const handleChange = () => {
-    setMatches(getMatches(query))
-  }
+  const handleChange = () => setMatches(getMatches(query))
 
   useIsomorphicLayoutEffect(() => {
     const matchMedia = window.matchMedia(query)
     handleChange()
-
     matchMedia.addEventListener("change", handleChange)
-
-    return () => {
-      matchMedia.removeEventListener("change", handleChange)
-    }
+    return () => matchMedia.removeEventListener("change", handleChange)
   }, [query])
 
   return matches
 }
 
-// --- GYM IMAGES (Titan Equipment Vibe) ---
-const gymImages = [
-  "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop", // Dark Gym
-  "https://images.unsplash.com/photo-1590487988256-9ed24133863e?q=80&w=2028&auto=format&fit=crop", // Dumbbells
-  "https://images.unsplash.com/photo-1517963879466-e9b5ce382569?q=80&w=2071&auto=format&fit=crop", // Weights
-  "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=2070&auto=format&fit=crop", // Bench
-  "https://images.unsplash.com/photo-1576678927484-cc907957088c?q=80&w=2070&auto=format&fit=crop", // Racks
-  "https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?q=80&w=2069&auto=format&fit=crop", // Chains
-]
-
+// --- ANIMATION CONFIG ---
 const duration = 0.15
-// We cast to 'any' to stop TypeScript from complaining about the specific bezier array
 const transition = { duration, ease: [0.32, 0.72, 0, 1], filter: "blur(4px)" } as any
 const transitionOverlay = { duration: 0.5, ease: [0.32, 0.72, 0, 1] } as any
+
 const Carousel = memo(
   ({
     handleClick,
@@ -85,7 +79,10 @@ const Carousel = memo(
     isCarouselActive: boolean
   }) => {
     const isScreenSizeSm = useMediaQuery("(max-width: 640px)")
-    const cylinderWidth = isScreenSizeSm ? 1100 : 1800
+    
+    // FIX 1: Increased cylinder width so landscape images render larger
+    const cylinderWidth = isScreenSizeSm ? 1500 : 2800 
+    
     const faceCount = cards.length
     const faceWidth = cylinderWidth / faceCount
     const radius = cylinderWidth / (2 * Math.PI)
@@ -133,7 +130,7 @@ const Carousel = memo(
         >
           {cards.map((imgUrl, i) => (
             <motion.div
-              key={`key-${imgUrl}-${i}`}
+              key={`key-${i}`}
               className="absolute flex h-full origin-center items-center justify-center rounded-xl p-2"
               style={{
                 width: `${faceWidth}px`,
@@ -147,7 +144,8 @@ const Carousel = memo(
                 src={imgUrl}
                 alt={`gym_equipment_${i}`}
                 layoutId={`img-${imgUrl}`}
-                className="pointer-events-none w-full rounded-xl object-cover aspect-[3/4] border border-wild-dark hover:border-wild-accent transition-colors"
+                // FIX 2: Changed 'aspect-[3/4]' to 'aspect-video' (Landscape 16:9)
+                className="pointer-events-none w-full rounded-xl object-cover aspect-video border border-[#2e7d32] hover:border-[#76ff03] transition-colors shadow-[0_0_20px_rgba(0,0,0,0.5)]"
                 initial={{ filter: "blur(4px)" }}
                 layout="position"
                 animate={{ filter: "blur(0px)" }}
@@ -166,7 +164,6 @@ export function ThreeDPhotoCarousel() {
   const [isCarouselActive, setIsCarouselActive] = useState(true)
   const controls = useAnimation()
   
-  // Use our specific Gym Images
   const cards = useMemo(() => gymImages, [])
 
   const handleClick = (imgUrl: string) => {
@@ -191,14 +188,15 @@ export function ThreeDPhotoCarousel() {
             layoutId={`img-container-${activeImg}`}
             layout="position"
             onClick={handleClose}
-            className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-6"
+            className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6"
             style={{ willChange: "opacity" }}
             transition={transitionOverlay}
           >
             <motion.img
               layoutId={`img-${activeImg}`}
               src={activeImg}
-              className="max-w-full max-h-full rounded-lg shadow-2xl border-2 border-wild-accent"
+              // FIX 3: Removed height constraint to allow landscape to flow naturally
+              className="w-full max-w-5xl rounded-lg shadow-2xl border-2 border-[#76ff03]"
               initial={{ scale: 0.5 }}
               animate={{ scale: 1 }}
               transition={{
@@ -206,9 +204,7 @@ export function ThreeDPhotoCarousel() {
                 duration: 0.5,
                 ease: [0.25, 0.1, 0.25, 1],
               }}
-              style={{
-                willChange: "transform",
-              }}
+              style={{ willChange: "transform" }}
             />
           </motion.div>
         )}
